@@ -1,0 +1,6 @@
+[+] Building 30.1s (3/3) FINISHED
+ => ERROR [internal] load metadata for ghcr.io/acme/private:latest
+------
+ > [internal] load metadata for ghcr.io/acme/private:latest:
+------
+failed to solve: ghcr.io/acme/private:latest: failed to resolve source metadata: Head "https://ghcr.io/v2/acme/private/manifests/latest": context deadline exceeded

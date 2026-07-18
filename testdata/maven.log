@@ -1,0 +1,6 @@
+[INFO] Scanning for projects...
+[INFO] --- maven-pmd-plugin:3.25.0:check (default) @ quality ---
+[WARNING] 5 PMD violations were found.
+[ERROR] java.nio.file.NoSuchFileException: /Users/alice/work/quality/target/pmd.xml
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-pmd-plugin:3.25.0:check (default) on project quality: Unable to perform PMD check -> [Help 1]
+[INFO] BUILD FAILURE
