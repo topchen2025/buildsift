@@ -1,0 +1,9 @@
+/buildsift
+/buildsift.exe
+/dist/
+*.out
+*.test
+coverage.*
+.DS_Store
+.idea/
+.vscode/
