@@ -1,0 +1,58 @@
+name: Incorrect diagnosis
+description: Report a false positive, missed cause, or unsafe diagnostic output.
+title: "[bug]: "
+labels:
+  - bug
+body:
+  - type: input
+    id: version
+    attributes:
+      label: BuildSift version
+      placeholder: buildsift 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: macOS 15 arm64
+    validations:
+      required: true
+  - type: dropdown
+    id: input-mode
+    attributes:
+      label: Input mode
+      options:
+        - Wrapped command
+        - Log file
+        - stdin pipe
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual output
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected output
+    validations:
+      required: true
+  - type: textarea
+    id: log
+    attributes:
+      label: Minimal sanitized log
+      description: Do not include credentials, private hosts, usernames, customer data, or proprietary source.
+      render: text
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Publication safety
+      options:
+        - label: I have permission to publish this excerpt and have removed secrets and private data.
+          required: true

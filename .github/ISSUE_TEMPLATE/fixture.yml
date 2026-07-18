@@ -1,0 +1,52 @@
+name: Sanitized failure fixture
+description: Contribute a real, confirmed failure so BuildSift can learn it deterministically.
+title: "[fixture]: "
+labels:
+  - fixture
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for turning one noisy incident into a regression test. Remove credentials, private hosts, usernames, customer data, and proprietary source before submitting anything.
+  - type: dropdown
+    id: tool
+    attributes:
+      label: Build tool
+      options:
+        - Maven
+        - Gradle
+        - npm
+        - pnpm
+        - Docker / Compose
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: root-cause
+    attributes:
+      label: Confirmed root cause
+      description: State the cause in one sentence and explain how you confirmed it.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence lines
+      description: Paste only the smallest sanitized excerpt that proves the cause and shows misleading downstream noise.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected BuildSift diagnosis
+      description: What root cause and next check should BuildSift report?
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Publication safety
+      options:
+        - label: I have permission to publish this excerpt and have removed secrets and private data.
+          required: true
