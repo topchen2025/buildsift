@@ -1,0 +1,2 @@
+[+] Running 1/2
+Error response from daemon: driver failed programming external connectivity: Bind for 0.0.0.0:5432 failed: port is already allocated

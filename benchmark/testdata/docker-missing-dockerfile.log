@@ -1,0 +1,2 @@
+#0 building with "default" instance using docker driver
+ERROR: failed to solve: failed to read dockerfile: open /workspace/Dockerfile: no such file or directory
