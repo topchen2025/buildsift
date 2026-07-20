@@ -1,0 +1,3 @@
+npm ERR! code ENOENT
+npm ERR! enoent ENOENT: no such file or directory, open '/workspace/package.json'
+npm ERR! enoent This is related to npm not being able to find a file.

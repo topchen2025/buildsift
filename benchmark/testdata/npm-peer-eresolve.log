@@ -1,0 +1,4 @@
+npm ERR! code ERESOLVE
+npm ERR! ERESOLVE could not resolve
+npm ERR! Could not resolve dependency:
+npm ERR! peer react@"^18" from some-package@2.0.0

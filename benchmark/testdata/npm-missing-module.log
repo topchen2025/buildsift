@@ -1,0 +1,4 @@
+npm error code MODULE_NOT_FOUND
+npm error Cannot find module 'promise-retry'
+npm error Require stack:
+npm error - /usr/local/lib/node_modules/npm/node_modules/example/index.js
