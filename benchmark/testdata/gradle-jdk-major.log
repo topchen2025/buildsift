@@ -1,0 +1,3 @@
+FAILURE: Build failed with an exception.
+* What went wrong:
+> BUG! exception in phase 'semantic analysis' in source unit '_BuildScript_' Unsupported class file major version 66

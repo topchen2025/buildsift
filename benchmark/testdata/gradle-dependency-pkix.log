@@ -1,0 +1,8 @@
+> Task :compileJava FAILED
+FAILURE: Build failed with an exception.
+* What went wrong:
+Execution failed for task ':compileJava'.
+> Could not resolve all files for configuration ':compileClasspath'.
+   > Could not resolve org.slf4j:slf4j-api:2.0.16.
+      > Could not get resource 'https://repo.example.invalid/org/slf4j/slf4j-api/2.0.16/slf4j-api-2.0.16.pom'.
+         > PKIX path building failed: unable to find valid certification path to requested target

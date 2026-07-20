@@ -1,0 +1,5 @@
+> Task :someTask FAILED
+FAILURE: Build failed with an exception.
+* What went wrong:
+Execution failed for task ':someTask'.
+> Invocation of 'Task.project' by task ':someTask' at execution time is unsupported with the configuration cache.

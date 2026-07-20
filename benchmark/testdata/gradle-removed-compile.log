@@ -1,0 +1,4 @@
+FAILURE: Build failed with an exception.
+* What went wrong:
+A problem occurred evaluating root project 'demo'.
+> Could not find method compile() for arguments [directory '../libs'] on object of type org.gradle.api.internal.artifacts.dsl.dependencies.DefaultDependencyHandler.
