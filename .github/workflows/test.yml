@@ -33,3 +33,15 @@ jobs:
         run: go test ./...
       - name: Run vet
         run: go vet ./...
+      - name: Smoke test repository action
+        id: buildsift
+        uses: ./
+        with:
+          log-path: testdata/maven.log
+      - name: Verify action output
+        shell: bash
+        env:
+          BUILDSIFT_JSON: ${{ steps.buildsift.outputs.json }}
+        run: |
+          printf '%s\n' "$BUILDSIFT_JSON" | grep -F '"schema_version": "1"'
+          printf '%s\n' "$BUILDSIFT_JSON" | grep -F '"tool": "maven"'
