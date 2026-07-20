@@ -1,0 +1,3 @@
+ERR_PNPM_PEER_DEP_ISSUES Unmet peer dependencies
+some-package 2.0.0
+└── ✕ missing peer react@^18

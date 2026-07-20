@@ -1,0 +1,2 @@
+ERR_PNPM_FETCH_404 GET https://packages.example.invalid/npm/@example/private/-/private-1.0.0.tgz: Not Found - 404
+No authorization header was set for the request.
