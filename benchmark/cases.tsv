@@ -1,0 +1,21 @@
+id	ecosystem	reported_tool	expected_fragment	baseline
+maven-compiler-symbol	maven	maven	cannot find symbol	hit
+maven-parent-resolution	maven	maven	connect timed out	hit
+maven-dependency-missing	maven	maven	Could not find artifact com.sun.xml.bind:jaxb-core:jar:2.3.1	hit
+maven-surefire-assertion	maven	maven	expected <4> but was <5>	miss
+gradle-removed-compile	gradle	gradle	Could not find method compile()	hit
+gradle-jdk-major	gradle	gradle	Unsupported class file major version 66	hit
+gradle-config-cache	gradle	gradle	Invocation of 'Task.project'	hit
+gradle-dependency-pkix	gradle	gradle	PKIX path building failed	miss
+npm-missing-module	npm	npm	Cannot find module 'promise-retry'	hit
+npm-enoent-file	npm	npm	no such file or directory	hit
+npm-peer-eresolve	npm	npm	peer react@"^18"	miss
+npm-eacces-global	npm	npm	permission denied	miss
+pnpm-outdated-lockfile	pnpm	npm	pnpm-lock.yaml is not up to date	hit
+pnpm-peer-dependencies	pnpm	npm	Unmet peer dependencies	hit
+pnpm-no-matching-version	pnpm	npm	No matching version found	hit
+pnpm-fetch-auth	pnpm	npm	No authorization header was set	miss
+docker-daemon-unavailable	docker	docker	Cannot connect to the Docker daemon	hit
+docker-port-allocated	docker	docker	port is already allocated	hit
+docker-no-manifest	docker	docker	no matching manifest for linux/arm64/v8	hit
+docker-missing-dockerfile	docker	docker	no such file or directory	hit
