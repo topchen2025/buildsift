@@ -1,32 +1,36 @@
 # BuildSift
 
-**Your build failed. BuildSift finds the one error that actually matters.**
+**Turn failed build logs into compact, line-numbered evidence packets for Claude, Codex, CI—and humans.**
 
-No AI. No uploads. Just an evidence-backed root cause from the logs already on your machine.
+Local. Deterministic. No log uploads. BuildSift keeps the useful failure signal, folds the cascade, and points back to the exact source lines.
 
 [简体中文](README.zh-CN.md)
 
 ![BuildSift turns a noisy build log into one root cause, evidence, and a next check](docs/hero.svg)
 
-## Why BuildSift?
+## Try it in 30 seconds
 
-Build tools are excellent at producing logs and surprisingly bad at telling you which line started the failure. One missing file can become thousands of lines of stack traces, skipped modules, and secondary errors.
+Install the latest binary from [Releases](https://github.com/topchen2025/buildsift/releases/latest), or install with Go:
 
-BuildSift removes that noise. It ranks concrete failure signals, collapses downstream cascades, and points back to the original evidence so you can verify every conclusion.
-
-### Before
-
-```text
-[INFO] Reactor Summary for payments-parent 1.4.0:
-[INFO] payments-api ................................ FAILURE
-[INFO] payments-service ............................ SKIPPED
-[INFO] payments-web ................................ SKIPPED
-[ERROR] Failed to execute goal org.apache.maven.plugins:maven-pmd-plugin:...
-... 2,184 more lines ...
-[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+```bash
+go install github.com/topchen2025/buildsift/cmd/buildsift@latest
 ```
 
-### After
+Analyze a saved log:
+
+```bash
+buildsift build.log
+```
+
+Or wrap a command and keep its original output and exit status:
+
+```bash
+buildsift -- mvn test
+```
+
+BuildSift v0.1 focuses on Maven, Gradle, npm/pnpm, and Docker/Compose failures.
+
+## From log noise to an evidence packet
 
 ```text
 BUILDSIFT DIAGNOSIS
@@ -38,94 +42,75 @@ EVIDENCE
   L1842  NoSuchFileException: ~/work/quality/target/pmd.xml
 
 CASCADE
-  17 additional failure signals folded
+  17 additional failure signal(s) folded
 
 NEXT CHECK
   mvn -e -X
 ```
 
-The example is illustrative; BuildSift always reports the evidence found in your own log.
+The example is illustrative. BuildSift only reports evidence found in the input log; it does not invent an explanation when no supported pattern is present.
 
-## 30-second quick start
+The result is small enough to paste into Claude or Codex, structured enough for CI, and explicit enough for a human to verify against the original log.
 
-Install with Go:
+## Use it with agents and automation
 
-```bash
-go install github.com/topchen2025/buildsift/cmd/buildsift@latest
-```
-
-Or download the binary for your platform from [Releases](https://github.com/topchen2025/buildsift/releases/latest) and place it on your `PATH`. Then wrap a command:
+Create a shareable text packet:
 
 ```bash
-buildsift -- mvn test
+buildsift build.log > evidence.txt
 ```
 
-BuildSift streams the command output normally. If the command fails, it prints a short diagnosis and exits with the command's original status.
-
-From a source checkout, replace the install command with:
+Request machine-readable output for scripts and CI:
 
 ```bash
-go install ./cmd/buildsift
+buildsift --json build.log
 ```
 
-## Other inputs
-
-Analyze a saved log:
-
-```bash
-buildsift build.log
-```
-
-Or pipe CI output directly:
+Or analyze the failed portion of a GitHub Actions run:
 
 ```bash
 gh run view --log-failed | buildsift
 ```
 
-BuildSift v0.1 focuses on Maven, Gradle, npm/pnpm, and Docker/Compose failures.
+For a repository-native integration, use the [BuildSift GitHub Action](docs/github-action.md) with a pinned version:
+
+```yaml
+- name: Analyze failed build log
+  uses: topchen2025/buildsift@v0.1.0
+  with:
+    log-path: build.log
+```
 
 ## Why deterministic rules?
 
 Build logs are evidence, not a creative-writing prompt.
 
-- **Explainable:** every diagnosis points to the source lines that produced it.
+- **Verifiable:** evidence includes the original line numbers.
 - **Repeatable:** the same log and rule set produce the same result.
-- **Fast:** no model download, API round trip, or account is required.
-- **Honest about uncertainty:** low-confidence input is reported as unknown instead of guessed.
-- **Easy to test:** every rule can ship with a sanitized log fixture and an expected result.
+- **Private by default:** analysis runs locally without uploading the log.
+- **Fast to adopt:** no model, API key, account, or service is required.
+- **Honest about uncertainty:** unsupported failures are reported as unknown instead of guessed.
 
-## Privacy by design
+BuildSift complements AI tools; it gives them a smaller, grounded input instead of asking them to search an entire noisy log.
 
-BuildSift analyzes logs locally and does not send them to a server. Its analyzer needs no API key and makes no network request. Wrapped build commands can still use the network exactly as they normally would.
+## What it does—and does not do
 
-Diagnostic evidence masks common token, password, URL-credential, and home-directory patterns. When BuildSift wraps a command, its original streamed output remains untouched. Redaction is best-effort, not a guarantee, so inspect anything before sharing it.
+BuildSift ranks concrete failure signals, favors the earliest actionable cause, folds recognized downstream errors, and emits evidence plus a next check. It can read a file, stdin, or the output of a wrapped command.
 
-Logs can still contain credentials, private paths, source snippets, or customer data. Review and sanitize a log before attaching it to an issue or sharing it with another person. See [SECURITY.md](SECURITY.md) for responsible reporting.
+It is not a general-purpose debugger, and its current rule set cannot recognize every build failure. See the transparent corpus and evaluation method in [docs/benchmark.md](docs/benchmark.md); no universal accuracy or compression claim is implied.
 
-## Design principles
+## Privacy and redaction
 
-1. Find the earliest specific cause, not the loudest final error.
-2. Prefer evidence over speculation.
-3. Collapse consequences without hiding the original log.
-4. Preserve the wrapped command's output and exit status.
-5. Keep the default experience local, fast, and dependency-free.
+The analyzer makes no network request and sends no log to a server. Wrapped build commands can still use the network exactly as they normally would.
 
-## Roadmap
-
-- Expand high-quality fixtures for Maven, Gradle, npm/pnpm, and Docker/Compose.
-- Add JSON and Markdown output for CI annotations and issue reports.
-- Publish an official GitHub Action.
-- Expand secret and private-path redaction coverage with adversarial fixtures.
-- Grow community-maintained rule packs without turning the core into a plugin framework.
-
-The roadmap is intentionally small. BuildSift should become more accurate before it becomes more configurable.
+Diagnostic evidence masks common token, password, URL-credential, and home-directory patterns. Redaction is best-effort, not a guarantee: logs can still contain credentials, private paths, source snippets, or customer data, so inspect output before sharing it. See [SECURITY.md](SECURITY.md).
 
 ## Contributing
 
-The highest-value contribution is a sanitized real-world failure log with the expected root cause. It turns one frustrating incident into a regression test that helps everyone.
+The highest-value contribution is a sanitized real-world failure log with its confirmed root cause. That turns one incident into a regression fixture for everyone.
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) for the development workflow and fixture requirements. Please use GitHub Security Advisories for vulnerabilities rather than opening a public issue.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and fixture requirements. Please report vulnerabilities through GitHub Security Advisories instead of a public issue.
 
 ## License
 
-BuildSift is available under the [MIT License](LICENSE).
+[MIT](LICENSE)

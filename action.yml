@@ -1,0 +1,49 @@
+name: BuildSift evidence package
+description: Turn a saved build log into a structured root-cause evidence package
+
+inputs:
+  log-path:
+    description: Path to the build log, relative to GITHUB_WORKSPACE or absolute
+    required: true
+
+outputs:
+  json:
+    description: BuildSift structured evidence package
+    value: ${{ steps.analyze.outputs.json }}
+
+runs:
+  using: composite
+  steps:
+    - id: analyze
+      name: Analyze build log
+      shell: bash
+      env:
+        BUILDSIFT_LOG_PATH: ${{ inputs.log-path }}
+      run: |
+        # 2026-07-20：使用 Go 的工作目录参数运行源码，兼容不同托管运行器的路径格式。
+        set -euo pipefail
+
+        log_path="$BUILDSIFT_LOG_PATH"
+        if [[ "$log_path" != /* && ! "$log_path" =~ ^[A-Za-z]:[\\/] ]]; then
+          log_path="$GITHUB_WORKSPACE/$log_path"
+        fi
+
+        result_file="$RUNNER_TEMP/buildsift-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT.json"
+        go -C "$GITHUB_ACTION_PATH" run ./cmd/buildsift --json "$log_path" > "$result_file"
+
+        delimiter="buildsift_${GITHUB_RUN_ID}_${GITHUB_RUN_ATTEMPT}_${RANDOM}"
+        {
+          printf 'json<<%s\n' "$delimiter"
+          cat "$result_file"
+          printf '\n%s\n' "$delimiter"
+        } >> "$GITHUB_OUTPUT"
+
+        {
+          printf '## BuildSift diagnosis\n\n```json\n'
+          cat "$result_file"
+          printf '\n```\n'
+        } >> "$GITHUB_STEP_SUMMARY"
+
+branding:
+  icon: search
+  color: blue
