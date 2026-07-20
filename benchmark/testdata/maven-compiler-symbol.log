@@ -1,0 +1,4 @@
+[INFO] --- maven-compiler-plugin:3.11.0:compile (default-compile) @ demo ---
+[ERROR] /workspace/src/main/java/example/App.java:[11,9] cannot find symbol
+[ERROR]   symbol:   variable log
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project demo: Compilation failure

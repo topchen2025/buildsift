@@ -1,0 +1,4 @@
+[INFO] Results:
+[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0
+[ERROR] demo.CalculatorTest.adds: expected <4> but was <5>
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.5.3:test (default-test) on project demo: There are test failures.

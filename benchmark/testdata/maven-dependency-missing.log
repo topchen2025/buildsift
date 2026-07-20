@@ -1,0 +1,1 @@
+[ERROR] Failed to execute goal on project server: Could not resolve dependencies for project server:jar:1.0.0: Could not find artifact com.sun.xml.bind:jaxb-core:jar:2.3.1 in central (https://repo.maven.apache.org/maven2)

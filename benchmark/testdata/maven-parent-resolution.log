@@ -1,0 +1,2 @@
+[ERROR] Non-resolvable parent POM for com.example:demo:1.0.0: Could not transfer artifact org.example:parent:pom:1.0.0 from/to central (https://repo.maven.apache.org/maven2): connect timed out and 'parent.relativePath' points at no local POM
+[ERROR] The build could not read 1 project -> [Help 1]
