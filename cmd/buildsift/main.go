@@ -21,6 +21,7 @@ func main() {
 }
 
 func run(args []string) int {
+	jsonOutput, args := extractJSONOption(args)
 	if len(args) > 0 {
 		switch args[0] {
 		case "-h", "--help":
@@ -34,7 +35,7 @@ func run(args []string) int {
 				fmt.Fprintln(os.Stderr, "buildsift: missing command after --")
 				return 2
 			}
-			return runCommand(args[1:])
+			return runCommand(args[1:], jsonOutput)
 		}
 	}
 
@@ -45,8 +46,29 @@ func run(args []string) int {
 	}
 
 	diagnosis := analyzer.Analyze(string(content))
-	fmt.Fprint(os.Stdout, analyzer.Render(diagnosis))
+	if err := writeDiagnosis(os.Stdout, diagnosis, jsonOutput); err != nil {
+		fmt.Fprintf(os.Stderr, "buildsift: render diagnosis: %v\n", err)
+		return 1
+	}
 	return 0
+}
+
+// 2026-07-20：仅在命令分隔符前识别 JSON 开关，避免改写被执行命令的参数。
+func extractJSONOption(args []string) (bool, []string) {
+	jsonOutput := false
+	remaining := make([]string, 0, len(args))
+	for index, arg := range args {
+		if arg == "--" {
+			remaining = append(remaining, args[index:]...)
+			break
+		}
+		if arg == "--json" {
+			jsonOutput = true
+			continue
+		}
+		remaining = append(remaining, arg)
+	}
+	return jsonOutput, remaining
 }
 
 func readInput(args []string) ([]byte, error) {
@@ -67,20 +89,35 @@ func readInput(args []string) ([]byte, error) {
 	return io.ReadAll(os.Stdin)
 }
 
-func runCommand(command []string) int {
+func runCommand(command []string, jsonOutput bool) int {
 	var capture lockedBuffer
 	cmd := exec.Command(command[0], command[1:]...)
 	cmd.Stdin = os.Stdin
-	cmd.Stdout = io.MultiWriter(os.Stdout, &capture)
-	cmd.Stderr = io.MultiWriter(os.Stderr, &capture)
+	if jsonOutput {
+		cmd.Stdout = io.MultiWriter(os.Stderr, &capture)
+		cmd.Stderr = io.MultiWriter(os.Stderr, &capture)
+	} else {
+		cmd.Stdout = io.MultiWriter(os.Stdout, &capture)
+		cmd.Stderr = io.MultiWriter(os.Stderr, &capture)
+	}
 
 	err := cmd.Run()
+	if jsonOutput {
+		if renderErr := writeDiagnosis(os.Stdout, analyzer.Analyze(capture.String()), true); renderErr != nil {
+			fmt.Fprintf(os.Stderr, "buildsift: render diagnosis: %v\n", renderErr)
+			if err == nil {
+				return 1
+			}
+		}
+	}
 	if err == nil {
 		return 0
 	}
 
-	fmt.Fprintln(os.Stderr)
-	fmt.Fprint(os.Stderr, analyzer.Render(analyzer.Analyze(capture.String())))
+	if !jsonOutput {
+		fmt.Fprintln(os.Stderr)
+		fmt.Fprint(os.Stderr, analyzer.Render(analyzer.Analyze(capture.String())))
+	}
 
 	var exitErr *exec.ExitError
 	if errors.As(err, &exitErr) {
@@ -90,6 +127,19 @@ func runCommand(command []string) int {
 		return 127
 	}
 	return 1
+}
+
+func writeDiagnosis(w io.Writer, diagnosis analyzer.Diagnosis, jsonOutput bool) error {
+	if !jsonOutput {
+		_, err := fmt.Fprint(w, analyzer.Render(diagnosis))
+		return err
+	}
+	payload, err := analyzer.RenderJSON(diagnosis, version)
+	if err != nil {
+		return err
+	}
+	_, err = fmt.Fprintln(w, string(payload))
+	return err
 }
 
 func printUsage(w io.Writer) {
@@ -102,7 +152,8 @@ Usage:
 
 Options:
   -h, --help                 show help
-  -v, --version              show version`)
+  -v, --version              show version
+      --json                 emit a structured evidence package`)
 }
 
 type lockedBuffer struct {
